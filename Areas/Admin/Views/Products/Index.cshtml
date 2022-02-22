@@ -1,0 +1,135 @@
+﻿@using PagedList.Core.Mvc
+@model PagedList.Core.IPagedList<HShopping.Models.Products>
+
+@{
+    int currentpage = ViewBag.CurrentPage;
+    ViewData["Title"] = "Quản lý sản phâmr" + currentpage;
+    Layout = "~/Areas/Admin/Views/Shared/_Admin_Layout.cshtml";
+}
+
+<div class="page-header">
+    <div class="header-sub-title">
+        <nav class="breadcrumb breadcrumb-dash">
+            <a asp-area="Admin" asp-controller="Home" asp-action="Index" class="breadcrumb-item"><i class="anticon anticon-home m-r-5"></i>Home</a>
+            <a class="breadcrumb-item">Danh sách sản phẩm : page @currentpage</a>
+        </nav>
+    </div>
+</div>
+<h2 class="header-title">Danh sách sản phẩm</h2>
+<p>
+    <a class="btn btn-primary btn-tone m-r-10" role="button" asp-action="Create" asp-area="Admin" asp-controller="Products">Tạo mới sản phẩm</a>
+</p>
+<div class="main-content">
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <div class="d-md-flex">
+                    <div class="m-b-10 m-r-15">
+                        <select class="custom-select" style="min-width: 180px;" id="txtCatId" name="txtCatId" asp-items="ViewBag.Danhmucsanpham">
+                            <option value="0" disabled selected>Lọc....</option>
+                        </select>
+                    </div>
+
+                </div>
+                <table class="table table-hover e-commerce-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Tên sản phẩm</th>
+
+                            <th>Tên loại</th>
+                            <th>Mô tả ngắn</th>
+                            <th>Giá</th>
+                            <th>Giảm giá</th>
+                            <th>Số lượng </th>
+
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null)
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        @item.ProductId
+                                    </td>
+                                    <td>
+                                        @item.ProductName
+                                    </td>
+                                    <td>@item.Cat.CatName</td>
+                                    <td>@item.ShortDesc</td>
+
+                                    <td>
+                                        @item.Price.Value.ToString("#,###0") VNĐ
+                                    </td>
+                                    <td>@item.Discount</td>
+                                    <td>
+                                        @if (item.UnitsInStock.Value > 0)
+                                        {<div class="d-flex align-items-center">
+                                                <div class="badge badge-success badge-dot m-r-10"></div>
+                                                <div>In stock</div>
+                                            </div>}
+                                        else
+                                        {
+                                            <div class="d-flex align-items-center justify-content-start">
+                                                <div class="badge badge-danger badge-dot m-r-10 "></div>
+                                                <div>Out stock</div>
+                                            </div>
+                                        }
+
+                                    </td>
+                                    <td class="text-right">
+                                        <a class="btn btn-primary btn-tone m-r-5" role="button" asp-action="Edit" asp-route-id="@item.ProductId" asp-area="Admin" asp-controller="Products">Edit</a>
+                                        <a class="btn btn-secondary btn-tone m-r-5" role="button" asp-action="Details" asp-route-id="@item.ProductId" asp-area="Admin" asp-controller="Products">Details</a>
+                                        <a class="btn btn-success btn-tone m-r-5" role="button" asp-action="Delete" asp-route-id="@item.ProductId" asp-area="Admin" asp-controller="Products">Delete</a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+                </table>
+                <div aria-label="Page navigation example ">
+                    <ul class="pagination">
+                        <pager class="p-xxl-9" list="@Model" asp-area="Admin" asp-controller="Customers" asp-action="Index"></pager>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+<script>
+    $(document).ready(function () {
+        jQuery("#txtCatId").change(function () {
+            var catId = jQuery(this).children(":selected").attr("value");
+            catId = parseFloat(catId);
+            $('#txtCatId option').removeAttr('selected');
+            $("#txtCatId >[value = " + catId + "]").attr("selected","true");
+            $.ajax({
+                url: '/Admin/Products/Filter',
+                    datatype: "json",
+                type: "GET",
+                data: {
+                    CatId: catId
+                },
+                async: true,
+                success: function (result) {
+                    if (result.status == "success") {
+                        window.location.href = result.redirectUrl;
+                    }
+                },
+                error: function (xhr) {
+                    alert('error');
+                }
+            });
+
+        });
+
+    });
+</script>
+}

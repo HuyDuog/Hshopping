@@ -1,0 +1,73 @@
+﻿@using PagedList.Core.Mvc
+@model PagedList.Core.IPagedList<HShopping.Models.Customers>
+
+@{
+    int currentpage = ViewBag.CurrentPage;
+    ViewData["Title"] = "Quản lý khách hàng"+ currentpage   ;
+    Layout = "~/Areas/Admin/Views/Shared/_Admin_Layout.cshtml";
+}
+
+<div class="page-header">
+    <div class="header-sub-title">
+        <nav class="breadcrumb breadcrumb-dash">
+            <a asp-area="Admin" asp-controller="Home" asp-action="Index" class="breadcrumb-item"><i class="anticon anticon-home m-r-5"></i>Home</a>
+            <a class="breadcrumb-item">Danh sách khách hàng : page @currentpage</a>
+        </nav>
+    </div>
+</div>
+<h2 class="header-title">Danh sách khách hàng</h2>
+<p>
+    <a class="btn btn-primary btn-tone m-r-10" role="button" asp-action="Create" asp-area="Admin" asp-controller="Customers">Tạo mới</a>
+</p>
+<div class="main-content">
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover e-commerce-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Họ và tên</th>
+                            <th>Ngày sinh</th>
+                            <th>Email</th>
+                            <th>Điện thoại</th>
+                            <th>Truy cập lần cuối</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null)
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        @item.CustomerId
+                                    </td>
+                                    <td>
+                                        @item.FullName
+                                    </td>
+                                    <td>@item.Birthday</td>
+                                    <td>@item.Email</td>
+                                    <td>@item.Phone</td>
+                                    <td>@item.LastLogin</td>
+                                    <td class="text-right">
+                                        <a class="btn btn-primary btn-tone m-r-5" role="button" asp-action="Edit" asp-route-id="@item.CustomerId" asp-area="Admin" asp-controller="Customers">Edit</a>
+                                        <a class="btn btn-secondary btn-tone m-r-5" role="button" asp-action="Details" asp-route-id="@item.CustomerId" asp-area="Admin" asp-controller="Customers">Details</a>
+                                        <a class="btn btn-success btn-tone m-r-5" role="button" asp-action="Delete" asp-route-id="@item.CustomerId" asp-area="Admin" asp-controller="Customers">Delete</a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+                </table>
+                <div aria-label="Page navigation example ">
+                    <ul class="pagination">
+                        <pager class="p-xxl-9" list="@Model" asp-area="Admin" asp-controller="Customers" asp-action="Index"></pager>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
